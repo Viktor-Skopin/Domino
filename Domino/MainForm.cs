@@ -7,14 +7,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DominoPyramidLib;
 
 namespace Domino
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
+
+            Game MyGame = new Game();
+
+            MyGame.InitializeCells();
+            MyGame.PaintCell(panel1);
         }
+
+        
+
     }
 }
