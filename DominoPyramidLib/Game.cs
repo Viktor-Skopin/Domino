@@ -10,7 +10,9 @@ namespace DominoPyramidLib
 {
     public class Game
     {
-
+        /// <summary>
+        /// /
+        /// </summary>
         public Cell[,] Cells = new Cell[7,7];
         Domino[] Dominos = new Domino[28];
 
