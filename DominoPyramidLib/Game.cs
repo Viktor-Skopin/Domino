@@ -11,11 +11,18 @@ namespace DominoPyramidLib
     public class Game
     {
         /// <summary>
-        /// /
+        /// Ячейки для домино
         /// </summary>
         public Cell[,] Cells = new Cell[7,7];
+
+        /// <summary>
+        /// Кости домино
+        /// </summary>
         Domino[] Dominos = new Domino[28];
 
+        /// <summary>
+        /// Инициализация ячеек
+        /// </summary>
         public void InitializeCells()
         {
             for (int x = 0; x < Cells.GetLength(0); x++)
@@ -30,12 +37,17 @@ namespace DominoPyramidLib
             }
         }
 
+        /// <summary>
+        /// Отрисовка ячеек
+        /// </summary>
+        /// <param name="PaintForm"> Форма для отрисовки</param>
         public void PaintCell(Panel PaintForm)
         {
             int AligmentOffset = 210;
-            int HotizontalGap = 0;
+            
+            int HotizontalGap;
             int VerticalGap = 0;
-
+            
             for (int y = 0; y < Cells.GetLength(0); y++)
             {
                 HotizontalGap = 0;
@@ -49,8 +61,10 @@ namespace DominoPyramidLib
                         Cells[x, y].PB_Cell.Width = 60;
                         Cells[x, y].PB_Cell.BackColor = Color.Red;
                         Cells[x, y].PB_Cell.BorderStyle = BorderStyle.FixedSingle;
+                        Cells[x, y].PB_Cell.BackgroundImage = Image.FromFile(@"images/GitHub.png");
 
                         Cells[x, y].PB_Cell.Location = new Point((60 * x) + AligmentOffset + HotizontalGap, (30 * y) + VerticalGap);
+
                         HotizontalGap += 3;
                         
                     }
