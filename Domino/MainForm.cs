@@ -21,6 +21,9 @@ namespace Domino
 
             MyGame.InitializeCells();
             MyGame.PaintCell(panel1);
+            MyGame.InitializeDominos();
+            MyGame.RandomizeDominos();
+            MyGame.StartGame();
         }
 
         
