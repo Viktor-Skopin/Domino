@@ -39,13 +39,20 @@ namespace DominoPyramidLib
                     Cells[x, y].IsActive = (x > y) ? false : true;
 
                     //Создание событий ячеек
-                    Cells[x, y].GetEvent();
-                    
+                    Cells[x, y].PB_Cell.Click += new EventHandler(CellClick);
+
+
+
                     //Передача координат элемента массива в его параметры.
                     Cells[x, y].X = x;
                     Cells[x, y].Y = y;
                 }
             }
+        }
+
+        public void CellClick(object sender, EventArgs e)
+        {
+            MessageBox.Show("Сообщение - " + Convert.ToString(Cells[1, 2].X) + " " + Convert.ToString(Cells[1, 2].Y));
         }
 
         /// <summary>
@@ -121,21 +128,22 @@ namespace DominoPyramidLib
             /// <summary>
             /// Нажатие на кость домино.
             /// </summary>
-            public void CellClick(object sender, EventArgs e)
-            {
-                MessageBox.Show("Сообщение - " + Convert.ToString(X) + " " + Convert.ToString(Y));
 
-                
-            }
 
             /// <summary>
             /// Привязка события нажатия к методу.
             /// </summary>
-            public void GetEvent()
-            {
-                PB_Cell.Click += new EventHandler(CellClick);
-            }
+
         }
+
+        //public void GetEvent()
+        //{
+        //    for(int i = 0; i < Cells.Length; i++)
+        //    {
+
+        //    }
+        //    PB_Cell.Click += new EventHandler(CellClick);
+        //}
 
         /// <summary>
         /// Кость домино.
