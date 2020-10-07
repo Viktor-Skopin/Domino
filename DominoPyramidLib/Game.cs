@@ -21,10 +21,12 @@ namespace DominoPyramidLib
         /// </summary>
         public Domino[] Dominos = new Domino[28];
 
+        bool IsSoomeSelected { get; set; }
 
         public class PB : PictureBox
         {
             public int X { get; set; }
+            public int Y { get; set; }
         }
 
         /// <summary>
@@ -47,11 +49,8 @@ namespace DominoPyramidLib
                     //Создание событий ячеек
                     Cells[x, y].PB_Cell.Click += new EventHandler(CellClick);
 
-
-
-                    //Передача координат элемента массива в его параметры.
-                    Cells[x, y].X = x;
-                    Cells[x, y].Y = y;
+                    Cells[x, y].PB_Cell.X = x;
+                    Cells[x, y].PB_Cell.Y = y;
                 }
             }
         }
@@ -61,13 +60,13 @@ namespace DominoPyramidLib
         /// </summary>
         public void CellClick(object sender, EventArgs e)
         {
-            MessageBox.Show("Сообщение - " + Convert.ToString(Cells[1, 2].X) + " " + Convert.ToString(Cells[1, 2].Y));
+            PB cell = sender as PB;          
 
-            PB cell = sender as PB;
-            
-            cell.X = 10;
+            int X = cell.X;
+            int Y = cell.Y;
 
-            MessageBox.Show(Convert.ToString(cell.X));
+            CellSelection(Cells[X, Y]);
+
         }
 
         /// <summary>
@@ -109,6 +108,21 @@ namespace DominoPyramidLib
 
         }
 
+        public void CellSelection(Cell cell)
+        {
+            if (cell.IsSelected)
+            {
+                cell.PB_Cell.BorderStyle = BorderStyle.None;
+                cell.IsSelected = false;
+            }
+            else
+            {
+                cell.PB_Cell.BorderStyle = BorderStyle.Fixed3D;
+                cell.IsSelected = true;
+            }
+
+        }
+
         public class Cell
         {
             /// <summary>
@@ -131,23 +145,9 @@ namespace DominoPyramidLib
             /// <summary>
             /// Указывает открыта ли ячейка.
             /// </summary>
-            public bool IsUnlocked { get; set; }
+            public bool IsUnlocked { get; set; }         
 
-            /// <summary>
-            /// Координата X.
-            /// </summary>
-            public int X { get; set; }
-            /// <summary>
-            /// Координата Y.
-            /// </summary>
-            public int Y { get; set; }           
 
-            public void CellSelection()
-            {
-                IsSelected = true;
-
-                PB_Cell.BorderStyle = BorderStyle.Fixed3D;
-            }
         }
 
         /// <summary>
