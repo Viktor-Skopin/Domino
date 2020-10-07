@@ -21,6 +21,12 @@ namespace DominoPyramidLib
         /// </summary>
         public Domino[] Dominos = new Domino[28];
 
+
+        public class PB : PictureBox
+        {
+            public int X { get; set; }
+        }
+
         /// <summary>
         /// Инициализация ячеек
         /// </summary>
@@ -33,7 +39,7 @@ namespace DominoPyramidLib
                     //Инициализация ячейки
                     Cells[x, y] = new Cell();
                     //Инициализация PictureBox-а
-                    Cells[x, y].PB_Cell = new PictureBox();
+                    Cells[x, y].PB_Cell = new PB();
 
                     //Определение активности ячейки по её расположению
                     Cells[x, y].IsActive = (x > y) ? false : true;
@@ -50,9 +56,18 @@ namespace DominoPyramidLib
             }
         }
 
+        /// <summary>
+        /// Событие нажатия на PictureBox
+        /// </summary>
         public void CellClick(object sender, EventArgs e)
         {
             MessageBox.Show("Сообщение - " + Convert.ToString(Cells[1, 2].X) + " " + Convert.ToString(Cells[1, 2].Y));
+
+            PB cell = sender as PB;
+            
+            cell.X = 10;
+
+            MessageBox.Show(Convert.ToString(cell.X));
         }
 
         /// <summary>
@@ -99,13 +114,15 @@ namespace DominoPyramidLib
             /// <summary>
             /// PictureBox, который отображает кость домино.
             /// </summary>
-            public PictureBox PB_Cell { get; set; }
-
+            public PB PB_Cell { get; set; }
+            
             /// <summary>
             /// Указывает используется ли ячейка в игре.
             /// </summary>
             public bool IsActive { get; set; }
 
+
+            public bool IsSelected { get; set; }
             /// <summary>
             /// Кость домино, привязанная к ячейке.
             /// </summary>
@@ -125,25 +142,13 @@ namespace DominoPyramidLib
             /// </summary>
             public int Y { get; set; }           
 
-            /// <summary>
-            /// Нажатие на кость домино.
-            /// </summary>
+            public void CellSelection()
+            {
+                IsSelected = true;
 
-
-            /// <summary>
-            /// Привязка события нажатия к методу.
-            /// </summary>
-
+                PB_Cell.BorderStyle = BorderStyle.Fixed3D;
+            }
         }
-
-        //public void GetEvent()
-        //{
-        //    for(int i = 0; i < Cells.Length; i++)
-        //    {
-
-        //    }
-        //    PB_Cell.Click += new EventHandler(CellClick);
-        //}
 
         /// <summary>
         /// Кость домино.
