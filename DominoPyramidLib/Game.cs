@@ -23,6 +23,9 @@ namespace DominoPyramidLib
 
         bool IsSoomeSelected { get; set; }
 
+        int SelectedCellX { get; set; }
+        int SelectedCellY { get; set; }
+
         public class PB : PictureBox
         {
             public int X { get; set; }
@@ -65,7 +68,37 @@ namespace DominoPyramidLib
             int X = cell.X;
             int Y = cell.Y;
 
-            CellSelection(Cells[X, Y]);
+            if (IsSoomeSelected)
+            {
+                if(Cells[X, Y].IsSelected)
+                {
+                    CellSelection(Cells[X, Y]);
+                }
+                else if(CellsComparison(Cells[X, Y], Cells[SelectedCellX, SelectedCellY]))
+                {
+                    DeleteCell(Cells[X, Y]);
+                    DeleteCell(Cells[SelectedCellX, SelectedCellY]);
+                    IsSoomeSelected = false;
+                }
+            }
+            else
+            {
+                CellSelection(Cells[X, Y]);
+            }
+
+            UnlockCheck();
+
+            if (LosingCheck())
+            {
+                MessageBox.Show("Поражение");
+
+                //InitializeCells();
+                //InitializeDominos();
+                
+                RandomizeDominos();
+                StartGame();
+
+            }
 
         }
 
@@ -75,6 +108,7 @@ namespace DominoPyramidLib
         /// <param name="PaintForm"> Форма для отрисовки</param>
         public void PaintCell(Panel PaintForm)
         {
+
             int AligmentOffset = 210;
             
             int HotizontalGap;
@@ -110,17 +144,124 @@ namespace DominoPyramidLib
 
         public void CellSelection(Cell cell)
         {
-            if (cell.IsSelected)
+            if (cell.IsUnlocked)
             {
-                cell.PB_Cell.BorderStyle = BorderStyle.None;
-                cell.IsSelected = false;
+                if (cell.IsSelected)
+                {
+                    cell.PB_Cell.BorderStyle = BorderStyle.None;
+                    cell.IsSelected = false;
+                    IsSoomeSelected = false;
+                }
+                else
+                {
+                    cell.PB_Cell.BorderStyle = BorderStyle.Fixed3D;
+                    cell.IsSelected = true;
+                    IsSoomeSelected = true;
+
+                    SelectedCellX = cell.PB_Cell.X;
+                    SelectedCellY = cell.PB_Cell.Y;
+                }
+            }
+        }
+
+        public bool CellsComparison(Cell FirstCell, Cell SecondCell)
+        {
+            if(FirstCell.Domino.Value + SecondCell.Domino.Value == 12)
+            {
+                return true;
             }
             else
             {
-                cell.PB_Cell.BorderStyle = BorderStyle.Fixed3D;
-                cell.IsSelected = true;
+                return false;
+            }
+        }
+
+        public void DeleteCell(Cell cell)
+        {
+            cell.IsSelected = false;
+            cell.IsActive = false;
+            cell.PB_Cell.Visible = false;
+        }
+
+        public void UnlockCheck()
+        {
+            for (int x = 0; x < Cells.GetLength(0); x++)
+            {
+                for (int y = 0; y < Cells.GetLength(1); y++)
+                {
+                    if (Cells[x, y].IsActive)
+                    {
+                        if (y == 0 || y == 6)
+                        {
+
+                        }
+                        else if (x == 0)
+                        {
+                            if ((Cells[x, y + 1].IsActive == false && Cells[x + 1, y].IsActive == false) || Cells[x, y - 1].IsActive == false)
+                            {
+                                Cells[x, y].IsUnlocked = true;
+                                Cells[x, y].PB_Cell.BackgroundImage = Cells[x, y].Domino.DominoImage;
+                            }
+                        }
+                        else if (y == x)
+                        {
+                            if ((Cells[x, y + 1].IsActive == false && Cells[x + 1, y + 1].IsActive == false) || Cells[x - 1, y - 1].IsActive == false)
+                            {
+                                Cells[x, y].IsUnlocked = true;
+                                Cells[x, y].PB_Cell.BackgroundImage = Cells[x, y].Domino.DominoImage;
+                            }
+                        }
+                        else
+                        {
+                            if ((Cells[x, y + 1].IsActive == false && Cells[x + 1, y + 1].IsActive == false) || (Cells[x - 1, y - 1].IsActive == false && Cells[x, y - 1].IsActive == false))
+                            {
+                                Cells[x, y].IsUnlocked = true;
+                                Cells[x, y].PB_Cell.BackgroundImage = Cells[x, y].Domino.DominoImage;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool LosingCheck()
+        {
+            for (int x = 0; x < Cells.GetLength(0); x++)
+            {
+                for (int y = 0; y < Cells.GetLength(1); y++)
+                {
+                    if (Cells[x,y].IsActive && Cells[x, y].IsUnlocked)
+                    {
+                        if(PossibilityCheck(Cells[x, y], x, y) == false)
+                        {
+                            return false;
+                        }
+                        
+                    }
+                }
             }
 
+            return true;
+        }
+
+        public bool PossibilityCheck(Cell cell, int impX, int impY)
+        {
+
+            for (int x = 0; x < Cells.GetLength(0); x++)
+            {
+                for (int y = 0; y < Cells.GetLength(1); y++)
+                {
+                    if ((x != impX || y != impY) && (Cells[x, y].IsActive && Cells[x, y].IsUnlocked))
+                    {
+                        if (Cells[x, y].Domino.Value + Cells[impX, impY].Domino.Value == 12)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
         public class Cell
@@ -287,8 +428,11 @@ namespace DominoPyramidLib
             {
                 for (int y = 0; y < Cells.GetLength(1); y++)
                 {
+                    Cells[x, y].IsActive = (x > y) ? false : true;
+
                     if (Cells[x, y].IsActive)
                     {
+                        Cells[x, y].PB_Cell.Visible = true;
                         Cells[x, y].Domino = Dominos[k];
                         k++;
 
@@ -306,7 +450,5 @@ namespace DominoPyramidLib
                 }
             }
         }
-
-
     }
 }
