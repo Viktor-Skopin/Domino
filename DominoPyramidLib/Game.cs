@@ -21,7 +21,14 @@ namespace DominoPyramidLib
         /// </summary>
         public Domino[] Dominos = new Domino[28];
 
+        /// <summary>
+        /// Строка с количеством отавшихся костей
+        /// </summary>
         public Label CellsLabel { get; set; }
+
+        /// <summary>
+        /// Програсс бар отображающий прогресс игры
+        /// </summary>
         public ProgressBar PrB { get; set; }
 
         /// <summary>
@@ -68,6 +75,7 @@ namespace DominoPyramidLib
                     //Создание событий ячеек
                     Cells[x, y].PB_Cell.Click += new EventHandler(CellClick);
 
+                    //Передача ячейкам их координат
                     Cells[x, y].PB_Cell.X = x;
                     Cells[x, y].PB_Cell.Y = y;
                 }
@@ -79,31 +87,36 @@ namespace DominoPyramidLib
         /// </summary>
         public void CellClick(object sender, EventArgs e)
         {
-            PB cell = sender as PB;          
+            //Представление PictureBox-а как объекта PB
+            PB cell = sender as PB;
 
+            //Извлечение из ячейки её координат           
             int X = cell.X;
             int Y = cell.Y;
 
-            if (IsSoomeSelected)
+
+            if (IsSoomeSelected)//Если какая-то ячейка уже выбрана...
             {
-                if(Cells[X, Y].IsSelected)
+                if(Cells[X, Y].IsSelected)//...отменить выбор
                 {
                     CellSelection(Cells[X, Y]);
                 }
-                else if(CellsComparison(Cells[X, Y], Cells[SelectedCellX, SelectedCellY]))
+                else if(CellsComparison(Cells[X, Y], Cells[SelectedCellX, SelectedCellY]))//...убрать обе ячейки
                 {
                     DeleteCell(Cells[X, Y]);
                     DeleteCell(Cells[SelectedCellX, SelectedCellY]);
                     IsSoomeSelected = false;
                 }
             }
-            else
+            else//Иначе - выбрать ячейку
             {
                 CellSelection(Cells[X, Y]);
             }
 
+            //Нахождение и открытие ячеек
             UnlockCheck();
 
+            //Проверка победы
             if (WinCheck())
             {
                 MessageBox.Show("Вы победили", "Победа!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -112,6 +125,7 @@ namespace DominoPyramidLib
                 StartGame();
             }
 
+            //Проверка поражения
             if (LosingCheck())
             {
                 MessageBox.Show("Вы проиграли", "Поражение", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -120,6 +134,7 @@ namespace DominoPyramidLib
                 StartGame();
             }
 
+            //Вывод информации о кол-ве ячеек на форму
             GetCells();
         }
 
@@ -130,11 +145,11 @@ namespace DominoPyramidLib
         public void PaintCell(Panel PaintForm)
         {
 
-            int AligmentOffset = 210;
+            int AligmentOffset = 210;//Отступ для образования пирамиды
             
-            int HotizontalGap;
-            int VerticalGap = 0;
-            
+            int HotizontalGap;//Горизонтальный зазор между ячейками
+            int VerticalGap = 0;//Вертикальный зазор между ячейками
+
             for (int y = 0; y < Cells.GetLength(0); y++)
             {
                 HotizontalGap = 0;
@@ -144,6 +159,7 @@ namespace DominoPyramidLib
                     {
                         PaintForm.Controls.Add(Cells[x, y].PB_Cell);
 
+                        //Задание параметров ячеек
                         Cells[x, y].PB_Cell.Height = 30;
                         Cells[x, y].PB_Cell.Width = 60;
                         Cells[x, y].PB_Cell.BackColor = Color.Transparent;
@@ -152,16 +168,15 @@ namespace DominoPyramidLib
                         Cells[x, y].PB_Cell.BackgroundImage = Image.FromFile(@"images/06.png");
                         Cells[x, y].PB_Cell.BackgroundImageLayout = ImageLayout.Stretch;
 
+                        //Задание положения ячеек на форме
                         Cells[x, y].PB_Cell.Location = new Point((60 * x) + AligmentOffset + HotizontalGap, (30 * y) + VerticalGap);
 
-                        HotizontalGap += 3;
-                        
+                        HotizontalGap += 3;                        
                     }
                 }
                 VerticalGap += 3;
                 AligmentOffset -= 30;
             }
-
         }
 
         /// <summary>
@@ -228,11 +243,11 @@ namespace DominoPyramidLib
                 {
                     if (Cells[x, y].IsActive)
                     {
-                        if (y == 0 || y == 6)
+                        if (y == 0 || y == 6)//Игнорирование верхних и нижних ячеек
                         {
 
                         }
-                        else if (x == 0)
+                        else if (x == 0)//Проверка ячеек по левому краю
                         {
                             if ((Cells[x, y + 1].IsActive == false && Cells[x + 1, y + 1].IsActive == false) || Cells[x, y - 1].IsActive == false)
                             {
@@ -240,7 +255,7 @@ namespace DominoPyramidLib
                                 Cells[x, y].PB_Cell.BackgroundImage = Cells[x, y].Domino.DominoImage;
                             }
                         }
-                        else if (y == x)
+                        else if (y == x)//Проверка ячеек по првому краю
                         {
                             if ((Cells[x, y + 1].IsActive == false && Cells[x + 1, y + 1].IsActive == false) || Cells[x - 1, y - 1].IsActive == false)
                             {
@@ -248,7 +263,7 @@ namespace DominoPyramidLib
                                 Cells[x, y].PB_Cell.BackgroundImage = Cells[x, y].Domino.DominoImage;
                             }
                         }
-                        else
+                        else//Проверка остальных ячеек
                         {
                             if ((Cells[x, y + 1].IsActive == false && Cells[x + 1, y + 1].IsActive == false) || (Cells[x - 1, y - 1].IsActive == false && Cells[x, y - 1].IsActive == false))
                             {
@@ -270,7 +285,7 @@ namespace DominoPyramidLib
             {
                 for (int y = 0; y < Cells.GetLength(1); y++)
                 {
-                    if (Cells[x,y].IsActive && Cells[x, y].IsUnlocked)
+                    if (Cells[x,y].IsActive && Cells[x, y].IsUnlocked)//Проверка наличия пары для каждой ячейки
                     {
                         if(PossibilityCheck(Cells[x, y], x, y) == false)
                         {
@@ -283,19 +298,18 @@ namespace DominoPyramidLib
         }
 
         /// <summary>
-        /// Проверка возможности коомбинации двух клеток
+        /// Проверка возможности коомбинации для клетки
         /// </summary>
         /// <param name="cell">Первая ячейка</param>
         /// <param name="impX">Координата X второй ячейки</param>
         /// <param name="impY">Координата Y второй ячейки</param>
         public bool PossibilityCheck(Cell cell, int impX, int impY)
         {
-
             for (int x = 0; x < Cells.GetLength(0); x++)
             {
                 for (int y = 0; y < Cells.GetLength(1); y++)
                 {
-                    if ((x != impX || y != impY) && (Cells[x, y].IsActive && Cells[x, y].IsUnlocked))
+                    if ((x != impX || y != impY) && (Cells[x, y].IsActive && Cells[x, y].IsUnlocked))//Проверка комбинации с каждой клеткой, кроме себя
                     {
                         if (Cells[x, y].Domino.Value + Cells[impX, impY].Domino.Value == 12)
                         {
@@ -316,7 +330,7 @@ namespace DominoPyramidLib
             {
                 for (int y = 0; y < Cells.GetLength(1); y++)
                 {
-                    if (Cells[x, y].IsActive)
+                    if (Cells[x, y].IsActive)//Проверка наличия активных ячеек
                     {
                         return false;
                     }
@@ -325,10 +339,15 @@ namespace DominoPyramidLib
             return true;
         }
 
+        /// <summary>
+        /// Вывод информации о количестве оставшихся костей на форму
+        /// </summary>
         public void GetCells()
         {
+            //Счётчик
             int N=0;
 
+            //Подмчёт ячеек
             for (int x = 0; x < Cells.GetLength(0); x++)
             {
                 for (int y = 0; y < Cells.GetLength(1); y++)
@@ -340,8 +359,8 @@ namespace DominoPyramidLib
                 }
             }
 
-            PrB.Value = 28 - N;
-            CellsLabel.Text = "Осталось " + Convert.ToString(N) + " костей из 28";
+            PrB.Value = 28 - N;//Вывод на прогресс бар
+            CellsLabel.Text = "Осталось " + Convert.ToString(N) + " костей из 28";//Вывод на лейбл
         }
 
         /// <summary>
@@ -513,9 +532,9 @@ namespace DominoPyramidLib
             {
                 for (int y = 0; y < Cells.GetLength(1); y++)
                 {
-                    Cells[x, y].IsActive = (x > y) ? false : true;
+                    Cells[x, y].IsActive = (x > y) ? false : true;//Определение активности ячейки
 
-                    if (Cells[x, y].IsActive)
+                    if (Cells[x, y].IsActive)//Передача активным ячейкам костей домино
                     {
                         Cells[x, y].PB_Cell.Visible = true;
                         Cells[x, y].PB_Cell.BorderStyle = BorderStyle.None;
@@ -524,12 +543,12 @@ namespace DominoPyramidLib
                         Cells[x, y].Domino = Dominos[k];
                         k++;
 
-                        if (y == 0 || y == 6)
+                        if (y == 0 || y == 6)//Верхние и нижние ячейки отображают свои кости
                         {
                             Cells[x, y].PB_Cell.BackgroundImage = Cells[x, y].Domino.DominoImage;
                             Cells[x, y].IsUnlocked = true;
                         }
-                        else
+                        else//Остальные отображают заглушку
                         {
                             Cells[x, y].PB_Cell.BackgroundImage = Image.FromFile(@"images/DominoBack.png");
                             Cells[x, y].IsUnlocked = false;
@@ -537,7 +556,7 @@ namespace DominoPyramidLib
                     }
                 }
             }
-
+            //Вывод информации о кол-ве ячеек на форму
             GetCells();
         }
     }
