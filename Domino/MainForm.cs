@@ -13,11 +13,14 @@ namespace Domino
 {
     public partial class MainForm : Form
     {
+        Game MyGame = new Game();
+
         public MainForm()
         {
             InitializeComponent();
 
-            Game MyGame = new Game();
+            MyGame.CellsLabel = label1;
+            MyGame.PrB = progressBar1;
 
             MyGame.InitializeCells();
             MyGame.PaintCell(panel1);
@@ -26,7 +29,10 @@ namespace Domino
             MyGame.StartGame();
         }
 
-        
-
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MyGame.RandomizeDominos();
+            MyGame.StartGame();
+        }
     }
 }
